@@ -2,6 +2,7 @@ const pool = require('./db'); // Import the connection pool
 
 // Function to get all customers
 async function get() {
+  
   try {
     const [rows] = await pool.execute("SELECT * FROM customers");
     return rows;
