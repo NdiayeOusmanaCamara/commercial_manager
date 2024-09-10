@@ -1,6 +1,8 @@
 const readlineSync = require('readline-sync');
+const db = require('./db');
 const customerModule = require('./customer');
 const productModule = require('./product');
+
 // const orderModule = require('./orderModule');
 
 async function promptAddCustomer() {
@@ -16,7 +18,11 @@ async function promptAddProduct() {
   const name = readlineSync.question("Enter the product name: ");
   const description = readlineSync.question("Enter the product description: ");
   const price = readlineSync.questionFloat("Enter the product price: ");
-  await productModule.add(name, description, price);
+  const stock = readlineSync.questionFloat("Enter the product stock: ");
+  const category = readlineSync.questionFloat("Enter the product category: ");
+  const barcode = readlineSync.questionFloat("Enter the product barcode: ");
+  const status = readlineSync.questionFloat("Enter the product status: ");
+  await productModule.add(name, description, price, stock, category, barcode, status);
   console.log('Product added successfully.');
 }
 
@@ -80,7 +86,7 @@ async function mainMenu() {
       case "7":
         const updateProductId = readlineSync.questionInt("Enter the product ID to update: ");
         const updatedProductData = promptAddProduct();
-        await productModule.update(updateProductId, updatedProductData.name, updatedProductData.description, updatedProductData.price);
+        await productModule.update(updateProductId, updatedProductData.name, updatedProductData.description, updatedProductData.price,updatedProductData.stock,updatedProductData.category,updatedProductData.barcode,updatedProductData.status);
         console.log('Product updated successfully.');
         break;
       case "8":
@@ -99,6 +105,7 @@ async function mainMenu() {
         process.exit();
       default:
         console.log('Invalid choice, try again.');
+        break;
     }
   }
 }
