@@ -2,7 +2,6 @@ const readlineSync = require('readline-sync');
 const db = require('./db');
 const customerModule = require('./customer');
 const productModule = require('./product');
-
 // const orderModule = require('./orderModule');
 
 async function promptAddCustomer() {
@@ -14,16 +13,39 @@ async function promptAddCustomer() {
   console.log('Customer added successfully.');
 }
 
+async function promptUpdateCustomer() {
+  const updateCustomerId = readlineSync.questionInt("Enter the customer ID to update: ");
+  const name = readlineSync.question("Enter the new customer name: ");
+  const address = readlineSync.question("Enter the new address: ");
+  const email = readlineSync.question("Enter the new email: ");
+  const phone = readlineSync.question("Enter the new phone number: ");
+  await customerModule.update(updateCustomerId, name, address, email, phone);
+  console.log('Customer updated successfully.');
+}
+
 async function promptAddProduct() {
   const name = readlineSync.question("Enter the product name: ");
   const description = readlineSync.question("Enter the product description: ");
   const price = readlineSync.questionFloat("Enter the product price: ");
   const stock = readlineSync.questionFloat("Enter the product stock: ");
-  const category = readlineSync.questionFloat("Enter the product category: ");
-  const barcode = readlineSync.questionFloat("Enter the product barcode: ");
-  const status = readlineSync.questionFloat("Enter the product status: ");
+  const category = readlineSync.question("Enter the product category: ");
+  const barcode = readlineSync.question("Enter the product barcode: ");
+  const status = readlineSync.question("Enter the product status: ");
   await productModule.add(name, description, price, stock, category, barcode, status);
   console.log('Product added successfully.');
+}
+
+async function promptUpdateProduct() {
+  const updateProductId = readlineSync.questionInt("Enter the product ID to update: ");
+  const name = readlineSync.question("Enter the new product name: ");
+  const description = readlineSync.question("Enter the new product description: ");
+  const price = readlineSync.questionFloat("Enter the new product price: ");
+  const stock = readlineSync.questionFloat("Enter the new product stock: ");
+  const category = readlineSync.question("Enter the new product category: ");
+  const barcode = readlineSync.question("Enter the new product barcode: ");
+  const status = readlineSync.question("Enter the new product status: ");
+  await productModule.update(updateProductId, name, description, price, stock, category, barcode, status);
+  console.log('Product updated successfully.');
 }
 
 async function promptAddOrder() {
@@ -42,20 +64,15 @@ async function promptAddOrder() {
   console.log('Order created successfully.');
 }
 
-async function mainMenu() {
+async function manageCustomers() {
   while (true) {
     console.log(`
+      Customer Management:
       1. List Customers
       2. Add Customer
       3. Update Customer
       4. Delete Customer
-      5. List Products
-      6. Add Product
-      7. Update Product
-      8. Delete Product
-      9. Create Order
-      10. List Orders
-      0. Exit
+      0. Back to Main Menu
     `);
 
     const choice = readlineSync.question("Choose an option: ");
@@ -67,38 +84,113 @@ async function mainMenu() {
         await promptAddCustomer();
         break;
       case "3":
-        const updateCustomerId = readlineSync.questionInt("Enter the customer ID to update: ");
-        const updatedCustomerData = promptAddCustomer();
-        await customerModule.update(updateCustomerId, updatedCustomerData.name, updatedCustomerData.address, updatedCustomerData.email, updatedCustomerData.phone);
-        console.log('Customer updated successfully.');
+        await promptUpdateCustomer();
         break;
       case "4":
         const deleteCustomerId = readlineSync.questionInt("Enter the customer ID to delete: ");
         await customerModule.destroy(deleteCustomerId);
         console.log('Customer deleted successfully.');
         break;
-      case "5":
+      case "0":
+        return; // Go back to the main menu
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
+async function manageProducts() {
+  while (true) {
+    console.log(`
+      Product Management:
+      1. List Products
+      2. Add Product
+      3. Update Product
+      4. Delete Product
+      0. Back to Main Menu
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
         console.table(await productModule.get());
         break;
-      case "6":
+      case "2":
         await promptAddProduct();
         break;
-      case "7":
-        const updateProductId = readlineSync.questionInt("Enter the product ID to update: ");
-        const updatedProductData = promptAddProduct();
-        await productModule.update(updateProductId, updatedProductData.name, updatedProductData.description, updatedProductData.price,updatedProductData.stock,updatedProductData.category,updatedProductData.barcode,updatedProductData.status);
-        console.log('Product updated successfully.');
+      case "3":
+        await promptUpdateProduct();
         break;
-      case "8":
+      case "4":
         const deleteProductId = readlineSync.questionInt("Enter the product ID to delete: ");
         await productModule.destroy(deleteProductId);
         console.log('Product deleted successfully.');
         break;
-      case "9":
+      case "0":
+        return; // Go back to the main menu
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
+async function manageOrders() {
+  while (true) {
+    console.log(`
+      Order Management:
+      1. Create Order
+      2. List Orders
+      0. Back to Main Menu
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
         await promptAddOrder();
         break;
-      case "10":
+      case "2":
         console.table(await orderModule.getOrders());
+        break;
+      case "0":
+        return; // Go back to the main menu
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
+async function managePayments() {
+  // Implement your payment management logic here
+  console.log("Payment management not yet implemented.");
+}
+
+async function mainMenu() {
+  while (true) {
+    console.log(`
+      Main Menu:
+      1. Customer Management
+      2. Product Management
+      3. Order Management
+      4. Payment Management
+      0. Exit
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
+        await manageCustomers();
+        break;
+      case "2":
+        await manageProducts();
+        break;
+      case "3":
+        await manageOrders();
+        break;
+      case "4":
+        await managePayments();
         break;
       case "0":
         console.log('Exiting...');
