@@ -111,39 +111,44 @@ async function promptDeleteOrderDetail() {
 async function promptOrderDetails() {
   const orderId = readlineSync.questionInt("Enter the order ID to see details: ");
   const orderDetails = await orderModule.getOrderDetails(orderId);
-  console.table(orderDetails);  // Afficher les détails sous forme de tableau
+  console.table(orderDetails);  
 }
 
-async function manageOrderDetails() {
+
+async function mainMenu() {
   while (true) {
     console.log(`
-      Order Details Management:
-      1. Add Order Detail
-      2. List Order Details
-      3. Delete Order Detail
-      0. Back to Orders Menu
+      Main Menu:
+      1. Customer Management
+      2. Product Management
+      3. Payment Management
+      4. Order Management
+      0. Exit
     `);
+
     const choice = readlineSync.question("Choose an option: ");
     switch (choice) {
       case "1":
-        await promptAddOrderDetail();
+        await manageCustomers();
         break;
       case "2":
-        await promptOrderDetails();
+        await manageProducts();
         break;
-      case "3":
-        await promptDeleteOrderDetail();
+        case "3":
+        await managePayments();
+        break;
+      case "4":
+        await manageOrders();
         break;
       case "0":
-        return;
+        console.log('Exiting...');
+        process.exit();
       default:
         console.log('Invalid choice, try again.');
         break;
     }
   }
 }
-
-
 
 async function manageCustomers() {
   while (true) {
@@ -296,42 +301,30 @@ async function manageOrders() {
     }
   }
 }
-
-
-async function mainMenu() {
+async function manageOrderDetails() {
   while (true) {
     console.log(`
-      Main Menu:
-      1. Customer Management
-      2. Product Management
-      3. Order Management
-      4. Payment Management
-      0. Exit
+      Order Details Management:
+      1. Add Order Detail
+      2. List Order Details
+      3. Delete Order Detail
+      4. All list Order Detail
+      0. Back to Orders Menu
     `);
-
     const choice = readlineSync.question("Choose an option: ");
     switch (choice) {
       case "1":
-        await manageCustomers();
+        await promptAddOrderDetail();
         break;
       case "2":
-        await manageProducts();
-        break;
-      case "3":
-        await manageOrders();
-        break;
-      case "4":
-        await managePayments();
-        break;
-      case "0":
-        console.log('Exiting...');
-        process.exit();
-      default:
-        console.log('Invalid choice, try again.');
+        await promptOrderDetails();
         break;
     }
   }
 }
+
+
+
 
 
 

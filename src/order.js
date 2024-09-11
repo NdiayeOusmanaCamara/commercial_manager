@@ -8,10 +8,10 @@ async function getOrders() {
       throw error;
     }
   }
-// Fonction pour créer une commande
+
 async function addOrder(order_date, customer_id, delivery_address, track_number, status) {
     try {
-      // Vérifier si les paramètres sont définis
+  
       if (!order_date || !customer_id || !delivery_address || !track_number || !status) {
         throw new Error('Missing required parameters');
       }
@@ -26,10 +26,10 @@ async function addOrder(order_date, customer_id, delivery_address, track_number,
       throw error;
     }
   }
-  // Fonction pour mettre à jour une commande
+
 async function updateOrder(id, order_date, customer_id, delivery_address, track_number, status) {
     try {
-      // Vérifier si les paramètres sont définis
+     
       if (!id || !order_date || !customer_id || !delivery_address || !track_number || !status) {
         throw new Error('Missing required parameters');
       }
@@ -47,10 +47,10 @@ async function updateOrder(id, order_date, customer_id, delivery_address, track_
       throw error;
     }
   }
-  // Fonction pour supprimer une commande
+ 
 async function destroyOrder(id) {
     try {
-      // Vérification du paramètre
+     
       if (!id) {
         throw new Error('Order ID is required');
       }
@@ -69,7 +69,7 @@ async function destroyOrder(id) {
   
   
   
-// Fonction pour ajouter un détail de commande
+
 async function addOrderDetail(order_id, product_id, quantity, price) {
     try {
         if (!order_id || !product_id || !quantity || !price) {
@@ -87,7 +87,7 @@ async function addOrderDetail(order_id, product_id, quantity, price) {
     }
 }
 
-// Fonction pour obtenir les détails d'une commande
+
 async function getOrderDetails(id) {
     try {
         const [rows] = await pool.execute(
@@ -100,7 +100,17 @@ async function getOrderDetails(id) {
     }
 }
 
-// Fonction pour supprimer un détail de commande
+async function getAllOrderDetails() {
+  try {
+      const [rows] = await pool.execute(`SELECT * FROM order_details`);
+      return rows;
+  } catch (error) {
+      console.error('Error fetching all order details:', error);
+      throw error;
+  }
+}
+
+
 async function deleteOrderDetail(id) {
     try {
         await pool.execute(`DELETE FROM order_details WHERE id = ?`, [id]);
@@ -115,4 +125,4 @@ async function deleteOrderDetail(id) {
 
   
 
-module.exports = { getOrders, addOrder, updateOrder,   destroyOrder, addOrderDetail, getOrderDetails, deleteOrderDetail };
+module.exports = { getOrders, addOrder, updateOrder,   destroyOrder, getAllOrderDetails, addOrderDetail, getOrderDetails, deleteOrderDetail };
