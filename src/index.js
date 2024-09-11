@@ -64,63 +64,87 @@ async function promptUpdatePayment() {
   const order_id = readlineSync.question("Enter the new order_id: ");
   const date = readlineSync.question("Enter the new payment date: ");
   const amount = readlineSync.questionFloat("Enter the new payment amount: ");
-  const payment_method = readlineSync.question("Enter the payment method: ");  // Correction ici
+  const payment_method = readlineSync.question("Enter the payment method: "); 
   await paymentModule.update(updatePaymentId, order_id, date, amount, payment_method);
   console.log('Payment updated successfully.');
 }
 
 
 
+// Fonction pour ajouter une commande
 async function promptAddOrder() {
+  const order_date = readlineSync.question("Enter the order date: ");
   const customer_id = readlineSync.questionInt("Enter the customer ID: ");
-  const order_date = readlineSync.question("Enter the order date (YYYY-MM-DD): ");
-  const orderResult = await orderModule.createOrder(customer_id, order_date);
-
-  const orderId = orderResult.insertId;
-  while (true) {
-    const product_id = readlineSync.questionInt("Enter the product ID (or 0 to finish): ");
-    if (product_id === 0) break;
-    const quantity = readlineSync.questionInt("Enter the quantity: ");
-    await orderModule.addOrderDetail(orderId, product_id, quantity);
-    console.log('Product added to order.');
-  }
-  console.log('Order created successfully.');
+  const delivery_address = readlineSync.question("Enter the delivery address: ");
+  const track_number = readlineSync.question("Enter the tracking number: ");
+  const status = readlineSync.question("Enter the order status: ");
+  await orderModule.addOrder(order_date, customer_id, delivery_address, track_number, status);
+  console.log('Order added successfully.');
 }
 
-async function mainMenu() {
+
+async function promptUpdateOrder() {
+  const updateOrderId = readlineSync.questionInt("Enter the order ID to update: ");
+  const order_date = readlineSync.question("Enter the new order date: ");
+  const customer_id = readlineSync.questionInt("Enter the new customer ID: ");
+  const delivery_address = readlineSync.question("Enter the new delivery address: ");
+  const track_number = readlineSync.question("Enter the new tracking number: ");
+  const status = readlineSync.question("Enter the new order status: ");
+  await orderModule.updateOrder(updateOrderId, order_date, customer_id, delivery_address, track_number, status);
+  console.log('Order updated successfully.');
+}
+
+
+async function promptAddOrderDetail() {
+  const order_id = readlineSync.questionInt("Enter the order ID: ");
+  const product_id = readlineSync.questionInt("Enter the product ID: ");
+  const quantity = readlineSync.questionInt("Enter the quantity: ");
+  const price = readlineSync.questionFloat("Enter the price: ");
+  await orderModule.addOrderDetail(order_id, product_id, quantity, price);
+}
+
+async function promptDeleteOrderDetail() {
+  const detailId = readlineSync.questionInt("Enter the order detail ID to delete: ");
+  await orderModule.deleteOrderDetail(detailId);
+}
+
+async function promptOrderDetails() {
+  const orderId = readlineSync.questionInt("Enter the order ID to see details: ");
+  const orderDetails = await orderModule.getOrderDetails(orderId);
+  console.table(orderDetails);  // Afficher les détails sous forme de tableau
+}
+
+async function manageOrderDetails() {
   while (true) {
     console.log(`
-      Main Menu:
-      1. Customer Management
-      2. Product Management
-      3. Order Management
-      4. Payment Management
-      0. Exit
+      Order Details Management:
+      1. Add Order Detail
+      2. List Order Details
+      3. Delete Order Detail
+      0. Back to Orders Menu
     `);
-
     const choice = readlineSync.question("Choose an option: ");
     switch (choice) {
       case "1":
-        await manageCustomers();
+        await promptAddOrderDetail();
         break;
       case "2":
-        await manageProducts();
+        await promptOrderDetails();
         break;
       case "3":
-        await manageOrders();
-        break;
-      case "4":
-        await managePayments();
+        await promptDeleteOrderDetail();
         break;
       case "0":
-        console.log('Exiting...');
-        process.exit();
+        return;
       default:
         console.log('Invalid choice, try again.');
         break;
     }
   }
 }
+
+
+
 async function manageCustomers() {
   while (true) {
     console.log(`
@@ -149,7 +173,7 @@ async function manageCustomers() {
         console.log('Customer deleted successfully.');
         break;
       case "0":
-        return; // Go back to the main menu
+        return; 
       default:
         console.log('Invalid choice, try again.');
         break;
@@ -185,7 +209,7 @@ async function manageProducts() {
         console.log('Product deleted successfully.');
         break;
       case "0":
-        return; // Go back to the main menu
+        return; 
       default:
         console.log('Invalid choice, try again.');
         break;
@@ -193,41 +217,7 @@ async function manageProducts() {
   }
 }
 
-// async function manageCustomers() {
-//   while (true) {
-//     console.log(`
-//       Customer Management:
-//       1. List Customers
-//       2. Add Customer
-//       3. Update Customer
-//       4. Delete Customer
-//       0. Back to Main Menu
-//     `);
 
-//     const choice = readlineSync.question("Choose an option: ");
-//     switch (choice) {
-//       case "1":
-//         console.table(await customerModule.get());
-//         break;
-//       case "2":
-//         await promptAddCustomer();
-//         break;
-//       case "3":
-//         await promptUpdateCustomer();
-//         break;
-//       case "4":
-//         const deleteCustomerId = readlineSync.questionInt("Enter the customer ID to delete: ");
-//         await customerModule.destroy(deleteCustomerId);
-//         console.log('Customer deleted successfully.');
-//         break;
-//       case "0":
-//         return; // Go back to the main menu
-//       default:
-//         console.log('Invalid choice, try again.');
-//         break;
-//     }
-//   }
-// }
 
 async function managePayments() {
   while (true) {
@@ -257,7 +247,7 @@ async function managePayments() {
         console.log('Payment deleted successfully.');
         break;
       case "0":
-        return; // Go back to the main menu
+        return; 
       default:
         console.log('Invalid choice, try again.');
         break;
@@ -265,12 +255,17 @@ async function managePayments() {
   }
 }
 
+
+// Menu pour la gestion des commandes
 async function manageOrders() {
   while (true) {
     console.log(`
       Order Management:
-      1. Create Order
+      1. Add Order
       2. List Orders
+      3. Update Order
+      4. Delete Order
+      5. Manage Order Details
       0. Back to Main Menu
     `);
 
@@ -282,8 +277,19 @@ async function manageOrders() {
       case "2":
         console.table(await orderModule.getOrders());
         break;
+      case "3":
+        await promptUpdateOrder();
+        break;
+      case "4":
+        const deleteOrderId = readlineSync.questionInt("Enter the order ID to delete: ");
+        await orderModule.destroyOrder(deleteOrderId);
+        console.log('Order deleted successfully.');
+        break;
+      case "5":
+        await manageOrderDetails();
+        break;
       case "0":
-        return; // Go back to the main menu
+        return;
       default:
         console.log('Invalid choice, try again.');
         break;
@@ -291,10 +297,43 @@ async function manageOrders() {
   }
 }
 
-// async function managePayments() {
-//   // Implement your payment management logic here
-//   console.log("Payment management not yet implemented.");
-// }
+
+async function mainMenu() {
+  while (true) {
+    console.log(`
+      Main Menu:
+      1. Customer Management
+      2. Product Management
+      3. Order Management
+      4. Payment Management
+      0. Exit
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
+        await manageCustomers();
+        break;
+      case "2":
+        await manageProducts();
+        break;
+      case "3":
+        await manageOrders();
+        break;
+      case "4":
+        await managePayments();
+        break;
+      case "0":
+        console.log('Exiting...');
+        process.exit();
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
+
 
 
 
