@@ -1,9 +1,9 @@
 const readlineSync = require('readline-sync');
 // const db = require('./db');
-const customerModule = require('./customer');
-const productModule = require('./product');
-const paymentModule = require('./payment');
-const orderModule = require('./order');
+const customerModule = require('./src/customer');
+const productModule = require('./src/product');
+const paymentModule = require('./src/payment');
+const orderModule = require('./src/order');
 
 async function promptAddCustomer() {
   const name = readlineSync.question("Enter the customer name: ");
