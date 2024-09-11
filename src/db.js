@@ -8,7 +8,7 @@ const connPool = mysql.createPool({
   database: "commercial_manager",
   waitForConnections: true,
   // connectionLimit: 10,
-  connectTimeout: 10000 // Timeout after 10 seconds if connection fails
+  connectTimeout: false // Timeout after 10 seconds if connection fails
 });
 
 // Asynchronous function to check the connection
