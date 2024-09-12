@@ -35,14 +35,14 @@ Suivez ces étapes pour configurer le projet sur votre machine locale :
 3. **Configurez la base de données MySQL :**
 - Créez une nouvelle base de données MySQL.
 - Importez le fichier SQL fourni pour créer les tables nécessaires :
-mysql -u votreUtilisateur -p votreNomDeBaseDeDonnées < orderManager.sql
+mysql -u votreUtilisateur -p commercial_manager < orderManager.sql
 4. **Mettez à jour le fichier db.js avec vos identifiants MySQL :**
 ```
 const pool = mysql.createPool({
     host: 'localhost',
     user: 'votreUtilisateur',
     password: 'votreMotDePasse',
-    database: 'votreNomDeBaseDeDonnées'
+    database: 'commercial_manager'
 });
 ```
 
