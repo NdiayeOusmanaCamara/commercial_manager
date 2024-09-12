@@ -37,4 +37,4 @@ node index.js
 2. Suivez les instructions dans la console pour gérer les clients, produits, paiements et commandes.
 
 ## Auteur
-Ce projet a été développé par [N'Diaye Ousmane Camara](https://github.com/NdiayeOusmanaCamara)
+[N'Diaye Ousmane Camara](https://github.com/NdiayeOusmanaCamara)
