@@ -1,17 +1,17 @@
-const pool = require("./db"); // Import the connection pool
+const pool = require("./db"); 
 
-// Function to get all products
+
 async function get() {
   try {
     const [rows] = await pool.execute("SELECT * FROM products");
     return rows;
   } catch (error) {
     console.error('Error fetching products:', error);
-    throw error; // Let the error propagate for further handling
+    throw error; 
   }
 }
 
-// Function to add a new product
+
 async function add(name, description, price, stock, category, barcode, status) {
   try {
     const [result] = await pool.execute(
@@ -25,7 +25,7 @@ async function add(name, description, price, stock, category, barcode, status) {
   }
 }
 
-// Function to update a product
+
 async function update(id, name, description, price, stock, category, barcode, status) {
   try {
     const [result] = await pool.execute(
@@ -39,7 +39,7 @@ async function update(id, name, description, price, stock, category, barcode, st
   }
 }
 
-// Function to delete a product
+
 async function destroy(id) {
   try {
     const [result] = await pool.execute(

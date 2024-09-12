@@ -1,5 +1,5 @@
 const readlineSync = require('readline-sync');
-// const db = require('./db');
+
 const customerModule = require('./src/customer');
 const productModule = require('./src/product');
 const paymentModule = require('./src/payment');
@@ -69,7 +69,6 @@ async function promptUpdatePayment() {
 }
 
 
-// Fonction pour ajouter une commande et saisir les détails de la commande
 async function promptAddOrder() {
   const order_date = readlineSync.question("Enter the order date: ");
   const customer_id = readlineSync.questionInt("Enter the customer ID: ");
@@ -77,39 +76,23 @@ async function promptAddOrder() {
   const track_number = readlineSync.question("Enter the tracking number: ");
   const status = readlineSync.question("Enter the order status: ");
   
-  // Ajouter la commande de base
+
   const orderId = await orderModule.addOrder(order_date, customer_id, delivery_address, track_number, status);
   console.log('Order added successfully.');
 
-  // Entrer les détails de la commande
+  
   while (true) {
     console.log("Now, let's add order details.");
     const product_id = readlineSync.questionInt("Enter the product ID: ");
     const quantity = readlineSync.questionInt("Enter the quantity: ");
     const price = readlineSync.questionFloat("Enter the price: ");
 
-    // Ajouter le détail de la commande
-    async function addOrderDetail(order_id, product_id, quantity, price) {
-      try {
-        const query = 'INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)';
-        
-        // Exécute la requête avec les paramètres appropriés
-        const [result] = await db.promise().execute(query, [order_id, product_id, quantity, price]);
-        
-        return result;
-      } catch (error) {
-        console.error('Error adding order detail:', error);
-        throw error;
-      }
-    }
-    
-
-    // Sauvegarder ou retourner
-    const action = readlineSync.question("Type 'save' to save and finish or 'back' to add another detail: ");
+     
+    const action = readlineSync.question("Type 'save' to save and finish or 'exit' to add another detail: ");
     if (action.toLowerCase() === 'save') {
       console.log('Order and details saved successfully.');
       break;
-    } else if (action.toLowerCase() !== 'back') {
+    } else if (action.toLowerCase() !== 'exit') {
       console.log('Invalid choice, try again.');
     }
   }
@@ -125,8 +108,113 @@ async function promptUpdateOrder() {
   await orderModule.updateOrder(updateOrderId, order_date, customer_id, delivery_address, track_number, status);
   console.log('Order updated successfully.');
 }
+async function manageCustomers() {
+  while (true) {
+    console.log(`
+      Customer Management:
+      1. Add Customer
+      2. List Customers
+      3. Update Customer
+      4. Delete Customer
+      0. Back to Main Menu
+    `);
 
-// Fonction principale de gestion des commandes
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
+        await promptAddCustomer();
+        break;
+      case "2":
+        console.table(await customerModule.get());
+        break;
+      case "3":
+        await promptUpdateCustomer();
+        break;
+      case "4":
+        const deleteCustomerId = readlineSync.questionInt("Enter the customer ID to delete: ");
+        await customerModule.destroy(deleteCustomerId); 
+        console.log('Customer deleted successfully.');
+        break;
+      case "0":
+        return; 
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
+async function manageProducts() {
+  while (true) {
+    console.log(`
+      Product Management:
+      1. Add Product
+      2. List Products
+      3. Update Product
+      4. Delete Product
+      0. Back to Main Menu
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
+        await promptAddProduct();
+        break;
+      case "2":
+        console.table(await productModule.get());
+        break;
+      case "3":
+        await promptUpdateProduct();
+        break;
+      case "4":
+        const deleteProductId = readlineSync.questionInt("Enter the product ID to delete: ");
+        await productModule.destroy(deleteProductId);
+        console.log('Product deleted successfully.');
+        break;
+      case "0":
+        return; 
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+async function managePayments() {
+  while (true) {
+    console.log(`
+      Payment Management:
+      1. Add Payment
+      2. List Payments
+      3. Update Payment
+      4. Delete Payment
+      0. Back to Main Menu
+    `);
+
+    const choice = readlineSync.question("Choose an option: ");
+    switch (choice) {
+      case "1":
+        await promptAddPayment();
+        break;
+      case "2":
+        console.table(await paymentModule.get());
+        break;
+      case "3":
+        await promptUpdatePayment();
+        break;
+      case "4":
+        const deletePaymentId = readlineSync.questionInt("Enter the payment ID to delete: ");
+        await paymentModule.destroy(deletePaymentId);
+        console.log('Payment deleted successfully.');
+        break;
+      case "0":
+        return; 
+      default:
+        console.log('Invalid choice, try again.');
+        break;
+    }
+  }
+}
+
 async function manageOrders() {
   while (true) {
     console.log(`
@@ -151,7 +239,7 @@ async function manageOrders() {
         break;
         case "4":
           const deleteOrderId = readlineSync.questionInt("Enter the order ID to delete: ");
-          await orderModule.destroyOrder(deleteOrderId); // Use deleteOrderId here
+          await orderModule.destroyOrder(deleteOrderId); 
           console.log('Order deleted successfully.');
           break;
       case "0":

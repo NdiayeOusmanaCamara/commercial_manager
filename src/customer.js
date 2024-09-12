@@ -1,6 +1,6 @@
-const pool = require('./db'); // Import the connection pool
+const pool = require('./db'); 
 
-// Function to get all customers
+
 async function get() {
   
   try {
@@ -8,11 +8,10 @@ async function get() {
     return rows;
   } catch (error) {
     console.error('Error fetching customers:', error);
-    throw error; // Let the error propagate to be handled elsewhere
+    throw error; 
   }
 }
 
-// Function to add a new customer
 async function add(name, address, email, phone) {
   try {
     const [result] = await pool.execute(
@@ -26,7 +25,6 @@ async function add(name, address, email, phone) {
   }
 }
 
-// Function to update a customer
 async function update(id, name, address, email, phone) {
   try {
     const [result] = await pool.execute(
@@ -40,7 +38,7 @@ async function update(id, name, address, email, phone) {
   }
 }
 
-// Function to delete a customer
+
 async function destroy(id) {
   try {
     const [result] = await pool.execute(

@@ -1,6 +1,4 @@
-const pool = require('./db'); // Import the connection pool
-
-// Function to get all payments
+const pool = require('./db'); 
 async function get() {
     const connection = await pool.getConnection();
   try {
@@ -13,11 +11,11 @@ async function get() {
   }
 }
 
-// Function to add a new payment
+
 async function add(order_id, date, amount, payment_method) {
     const connection = await pool.getConnection();
     try {
-      // Validate that payment_method is a string
+      
       if (typeof payment_method !== 'string') {
         throw new Error('Payment method must be a string');
       }
@@ -34,7 +32,7 @@ async function add(order_id, date, amount, payment_method) {
     }
   }
 
-// Function to update a payment
+
 async function update(id, order_id, date, amount, payment_method) {
     const connection = await pool.getConnection();
   try {
@@ -48,7 +46,7 @@ async function update(id, order_id, date, amount, payment_method) {
 }
 }
 
-// Function to delete a payment
+
 async function destroy(id) {
     const connection = await pool.getConnection();
   try {
