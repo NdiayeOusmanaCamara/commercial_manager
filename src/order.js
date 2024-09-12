@@ -9,15 +9,15 @@ async function getOrders() {
   }
 }
 
-async function addOrder(order_date, customer_id, delivery_address, track_number, status) {
+async function addOrder(date, customer_id, delivery_address, track_number, status) {
   try {
-    if (!order_date || !customer_id || !delivery_address || !track_number || !status) {
+    if (!date || !customer_id || !delivery_address || !track_number || !status) {
       throw new Error('Missing required parameters');
     }
 
     const [result] = await pool.execute(
-      `INSERT INTO purchase_orders (order_date, customer_id, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)`,
-      [order_date, customer_id, delivery_address, track_number, status]
+      `INSERT INTO purchase_orders (date, customer_id, delivery_address, track_number, status) VALUES (?, ?, ?, ?, ?)`,
+      [date, customer_id, delivery_address, track_number, status]
     );
     return result.insertId;
   } catch (error) {
@@ -26,17 +26,17 @@ async function addOrder(order_date, customer_id, delivery_address, track_number,
   }
 }
 
-async function updateOrder(id, order_date, customer_id, delivery_address, track_number, status) {
+async function updateOrder(id, date, customer_id, delivery_address, track_number, status) {
   try {
-    if (!id || !order_date || !customer_id || !delivery_address || !track_number || !status) {
+    if (!id || !date || !customer_id || !delivery_address || !track_number || !status) {
       throw new Error('Missing required parameters');
     }
 
     const [result] = await pool.execute(
       `UPDATE purchase_orders
-       SET order_date = ?, customer_id = ?, delivery_address = ?, track_number = ?, status = ?
+       SET date = ?, customer_id = ?, delivery_address = ?, track_number = ?, status = ?
        WHERE id = ?`,
-      [order_date, customer_id, delivery_address, track_number, status, id]
+      [date, customer_id, delivery_address, track_number, status, id]
     );
 
     return result;

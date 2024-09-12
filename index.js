@@ -70,14 +70,14 @@ async function promptUpdatePayment() {
 
 
 async function promptAddOrder() {
-  const order_date = readlineSync.question("Enter the order date: ");
+  const date = readlineSync.question("Enter the order date: ");
   const customer_id = readlineSync.questionInt("Enter the customer ID: ");
   const delivery_address = readlineSync.question("Enter the delivery address: ");
   const track_number = readlineSync.question("Enter the tracking number: ");
   const status = readlineSync.question("Enter the order status: ");
   
 
-  const orderId = await orderModule.addOrder(order_date, customer_id, delivery_address, track_number, status);
+  const orderId = await orderModule.addOrder(date, customer_id, delivery_address, track_number, status);
   console.log('Order added successfully.');
 
   
@@ -100,12 +100,12 @@ async function promptAddOrder() {
 
 async function promptUpdateOrder() {
   const updateOrderId = readlineSync.questionInt("Enter the order ID to update: ");
-  const order_date = readlineSync.question("Enter the new order date: ");
+  const date = readlineSync.question("Enter the new order date: ");
   const customer_id = readlineSync.questionInt("Enter the new customer ID: ");
   const delivery_address = readlineSync.question("Enter the new delivery address: ");
   const track_number = readlineSync.question("Enter the new tracking number: ");
   const status = readlineSync.question("Enter the new order status: ");
-  await orderModule.updateOrder(updateOrderId, order_date, customer_id, delivery_address, track_number, status);
+  await orderModule.updateOrder(updateOrderId, date, customer_id, delivery_address, track_number, status);
   console.log('Order updated successfully.');
 }
 async function manageCustomers() {
