@@ -115,6 +115,8 @@ async function promptAddOrder() {
       const product_id = readlineSync.questionInt("Enter the product ID: ");
       const quantity = readlineSync.questionInt("Enter the quantity: ");
       const price = readlineSync.questionFloat("Enter the price: ");
+      
+      await orderModule.addOrderDetail(orderId, product_id, quantity, price);
 
       const action = readlineSync.question("Type 'save' to save and finish or 'exit' to add another detail: ");
       if (action.toLowerCase() === 'save') {
@@ -137,7 +139,23 @@ async function promptUpdateOrder() {
     const delivery_address = promptNonEmpty("Enter the new delivery address: ");
     const track_number = promptNonEmpty("Enter the new tracking number: ");
     const status = promptNonEmpty("Enter the new order status: ");
+    
     await orderModule.updateOrder(updateOrderId, date, customer_id, delivery_address, track_number, status);
+
+    console.log("Updating order details:");
+    while (true) {
+      const product_id = readlineSync.questionInt("Enter the product ID to update: ");
+      const quantity = readlineSync.questionInt("Enter the new quantity: ");
+      const price = readlineSync.questionFloat("Enter the new price: ");
+
+      await orderModule.updateOrderDetail(updateOrderId, product_id, quantity, price);
+
+      const action = readlineSync.question("Type 'save' to save and finish or 'exit' to update another detail: ");
+      if (action.toLowerCase() === 'save') {
+        console.log('Order and details updated successfully.');
+        break;
+      }
+    }
   } catch (error) {
     console.error('Error updating order:', error.message);
   }
@@ -290,7 +308,12 @@ async function manageOrders() {
         break;
       case "2":
         try {
-          console.table(await orderModule.getOrders());
+          const orders = await orderModule.getOrders();
+          console.table(orders);
+          
+            const details = await orderModule.getOrderDetails();
+            console.table(details);
+          
         } catch (error) {
           console.error('Error listing orders:', error.message);
         }

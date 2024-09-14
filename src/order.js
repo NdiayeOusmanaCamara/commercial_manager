@@ -12,6 +12,15 @@ async function getOrders() {
   }
 }
 
+async function getOrderDetails() {
+  try {
+    const [rows] = await pool.execute("SELECT * FROM order_details");
+    console.log('=====Orders details list =====');
+    return rows.length > 0 ? rows :console.log('No order details.') ;
+  } catch (error) {
+    throw new Error("Unable to fetch order details.");
+  }
+}
 
 async function addOrder(date, customer_id, delivery_address, track_number, status) {
   try {
@@ -30,6 +39,27 @@ async function addOrder(date, customer_id, delivery_address, track_number, statu
   }
 }
 
+async function addOrderDetail(order_id, product_id, quantity, price) {
+  try {
+    await pool.execute(
+      "INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)",
+      [order_id, product_id, quantity, price]
+    );
+  } catch (error) {
+    throw new Error("Unable to add order detail.");
+  }
+}
+
+// async function updateOrder(id, date, customer_id, delivery_address, track_number, status) {
+//   try {
+//     await pool.execute(
+//       "UPDATE purchase_orders SET date = ?, customer_id = ?, delivery_address = ?, track_number = ?, status = ? WHERE id = ?",
+//       [date, customer_id, delivery_address, track_number, status, id]
+//     );
+//   } catch (error) {
+//     throw new Error("Unable to update order.");
+//   }
+// }
 
 async function updateOrder(id, date, customer_id, delivery_address, track_number, status) {
   try {
@@ -48,6 +78,16 @@ async function updateOrder(id, date, customer_id, delivery_address, track_number
   }
 }
 
+async function updateOrderDetail(order_id, product_id, quantity, price) {
+  try {
+    await pool.execute(
+      "UPDATE order_details SET quantity = ?, price = ? WHERE order_id = ? AND product_id = ?",
+      [quantity, price, order_id, product_id]
+    );
+  } catch (error) {
+    throw new Error("Unable to update order detail.");
+  }
+}
 
 async function destroyOrder(orderId) {
   try {
@@ -67,7 +107,10 @@ async function destroyOrder(orderId) {
 
 module.exports = {
   getOrders,
+  getOrderDetails,
   addOrder,
+  addOrderDetail,
   updateOrder,
-  destroyOrder
+  updateOrderDetail,
+  destroyOrder,
 };
