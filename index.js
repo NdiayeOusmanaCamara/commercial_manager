@@ -134,32 +134,44 @@ async function promptAddOrder() {
 async function promptUpdateOrder() {
   try {
     const updateOrderId = readlineSync.questionInt("Enter the order ID to update: ");
+
     const date = promptNonEmpty("Enter the new order date: ");
     const customer_id = readlineSync.questionInt("Enter the new customer ID: ");
     const delivery_address = promptNonEmpty("Enter the new delivery address: ");
     const track_number = promptNonEmpty("Enter the new tracking number: ");
     const status = promptNonEmpty("Enter the new order status: ");
     
+    const confirmation = readlineSync.question("Are all details correct? (yes/no): ");
+    if (confirmation.toLowerCase() !== 'yes') {
+      console.log("Update canceled.");
+      return;
+    }
+
     await orderModule.updateOrder(updateOrderId, date, customer_id, delivery_address, track_number, status);
-
-    console.log("Updating order details:");
     while (true) {
-      const product_id = readlineSync.questionInt("Enter the product ID to update: ");
-      const quantity = readlineSync.questionInt("Enter the new quantity: ");
-      const price = readlineSync.questionFloat("Enter the new price: ");
+      const updateDetails = readlineSync.question("Do you want to update the order details? (yes/no): ");
+      if (updateDetails.toLowerCase() === 'no') {
+        break;
+      }
 
-      await orderModule.updateOrderDetail(updateOrderId, product_id, quantity, price);
+      const product_id = readlineSync.questionInt("Enter the product ID: ");
+      const quantity = readlineSync.questionInt("Enter the quantity: ");
+      const price = readlineSync.questionFloat("Enter the price: ");
 
-      const action = readlineSync.question("Type 'save' to save and finish or 'exit' to update another detail: ");
-      if (action.toLowerCase() === 'save') {
-        console.log('Order and details updated successfully.');
+      await orderModule.updateOrderDetails(updateOrderId, product_id, quantity, price);
+
+      const action = readlineSync.question("Type 'exit' to finish or press Enter to update another detail: ");
+      if (action.toLowerCase() === 'exit') {
         break;
       }
     }
+
+    console.log('Order and details updated successfully.');
   } catch (error) {
     console.error('Error updating order:', error.message);
   }
 }
+
 
 async function manageCustomers() {
   while (true) {
@@ -298,6 +310,7 @@ async function manageOrders() {
       2. List Orders
       3. Update Order
       4. Delete Order
+      5. View Order Details
       0. Back to Main Menu
     `);
 
@@ -308,12 +321,7 @@ async function manageOrders() {
         break;
       case "2":
         try {
-          const orders = await orderModule.getOrders();
-          console.table(orders);
-          
-            const details = await orderModule.getOrderDetails();
-            console.table(details);
-          
+          console.table(await orderModule.getOrders());
         } catch (error) {
           console.error('Error listing orders:', error.message);
         }
@@ -329,14 +337,23 @@ async function manageOrders() {
           console.error('Error deleting order:', error.message);
         }
         break;
+      case "5":
+        try {
+          const orderId = readlineSync.questionInt("Enter the order ID to view details: ");
+          await orderModule.getOrderDetailsById(orderId);
+        } catch (error) {
+          console.error('Error fetching order details:', error.message);
+        }
+        break;
       case "0":
-        return; 
+        return;
       default:
         console.log('Invalid choice, try again.');
         break;
     }
   }
 }
+
 
 async function main() {
   while (true) {

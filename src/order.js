@@ -12,15 +12,28 @@ async function getOrders() {
   }
 }
 
-async function getOrderDetails() {
+async function getOrderDetailsById(orderId) {
   try {
-    const [rows] = await pool.execute("SELECT * FROM order_details");
-    console.log('=====Orders details list =====');
-    return rows.length > 0 ? rows :console.log('No order details.') ;
+    if (!orderId) {
+      throw new Error('Order ID is required.');
+    }
+
+    const [order] = await pool.execute("SELECT * FROM purchase_orders WHERE id = ?", [orderId]);
+    if (order.length === 0) {
+      console.log('Order not found.');
+      return;
+    }
+
+    const [details] = await pool.execute("SELECT * FROM order_details WHERE order_id = ?", [orderId]);
+     console.log('===== Order Details =====');
+    // console.log('Order:', order);
+    console.table(details.length > 0 ? details : 'No details found.');
   } catch (error) {
-    throw new Error("Unable to fetch order details.");
+    console.error('Error:', error.message);
+    throw error;
   }
 }
+
 
 async function addOrder(date, customer_id, delivery_address, track_number, status) {
   try {
@@ -70,7 +83,7 @@ async function updateOrder(id, date, customer_id, delivery_address, track_number
       "UPDATE purchase_orders SET date = ?, customer_id = ?, delivery_address = ?, track_number = ?, status = ? WHERE id = ?",
       [date, customer_id, delivery_address, track_number, status, id]
     );
-    console.log(result.affectedRows > 0 ? 'Order updated.' : 'Order not found.');
+    console.log(result.affectedRows > 0 ? 'Order updated successfully.' : 'Order not found.');
     return result;
   } catch (error) {
     console.error('Error:', error.message);
@@ -78,16 +91,24 @@ async function updateOrder(id, date, customer_id, delivery_address, track_number
   }
 }
 
-async function updateOrderDetail(order_id, product_id, quantity, price) {
+async function updateOrderDetails(orderId, product_id, quantity, price) {
   try {
-    await pool.execute(
+    if (!orderId || !product_id || !quantity || !price) {
+      throw new Error('Missing parameters for order details.');
+    }
+
+    const [result] = await pool.execute(
       "UPDATE order_details SET quantity = ?, price = ? WHERE order_id = ? AND product_id = ?",
-      [quantity, price, order_id, product_id]
+      [quantity, price, orderId, product_id]
     );
+    
+    console.log(result.affectedRows > 0 ? 'Order details updated.' : 'Order details not found.');
   } catch (error) {
-    throw new Error("Unable to update order detail.");
+    console.error('Error updating order details:', error.message);
+    throw error;
   }
 }
+
 
 async function destroyOrder(orderId) {
   try {
@@ -107,10 +128,10 @@ async function destroyOrder(orderId) {
 
 module.exports = {
   getOrders,
-  getOrderDetails,
+  getOrderDetailsById,
   addOrder,
   addOrderDetail,
   updateOrder,
-  updateOrderDetail,
+  updateOrderDetails,
   destroyOrder,
 };
