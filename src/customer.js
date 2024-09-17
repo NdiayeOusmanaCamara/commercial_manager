@@ -1,5 +1,12 @@
-const pool = require('./db'); 
+const pool = require('./db');
 
+function isValidEmail(email) {
+  return email.includes('@'); 
+}
+
+function isValidPhone(phone) {
+  return /^\d+$/.test(phone);
+}
 
 async function get() {
   try {
@@ -12,9 +19,17 @@ async function get() {
   }
 }
 
-
 async function add(name, address, email, phone) {
   try {
+   
+    if (!isValidEmail(email)) {
+      throw new Error('Email must contain an "@" symbol.');
+    }
+
+    if (!isValidPhone(phone)) {
+      throw new Error('Phone number must be numeric.');
+    }
+
     const [result] = await pool.execute(
       "INSERT INTO customers (name, address, email, phone) VALUES (?, ?, ?, ?)",
       [name, address, email, phone]
@@ -26,7 +41,6 @@ async function add(name, address, email, phone) {
     throw error;
   }
 }
-
 
 async function update(id, name, address, email, phone) {
   try {
@@ -42,7 +56,6 @@ async function update(id, name, address, email, phone) {
   }
 }
 
-// Delete a customer
 async function destroy(id) {
   try {
     const [result] = await pool.execute(

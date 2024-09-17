@@ -107,8 +107,11 @@ async function promptAddOrder() {
     const track_number = promptNonEmpty("Enter the tracking number: ");
     const status = promptNonEmpty("Enter the order status: ");
 
+    // Ajouter la commande à la base de données
     const orderId = await orderModule.addOrder(date, customer_id, delivery_address, track_number, status);
     console.log('Order added successfully.');
+
+    const orderDetails = [];
 
     while (true) {
       console.log("Now, let's add order details.");
@@ -116,13 +119,24 @@ async function promptAddOrder() {
       const quantity = readlineSync.questionInt("Enter the quantity: ");
       const price = readlineSync.questionFloat("Enter the price: ");
       
-      await orderModule.addOrderDetail(orderId, product_id, quantity, price);
+      // Ajouter les détails dans le tableau
+      orderDetails.push({ product_id, quantity, price });
 
-      const action = readlineSync.question("Type 'save' to save and finish or 'exit' to add another detail: ");
+      const action = readlineSync.question("Type 'save' to save and finish, 'continue' to add more details, or 'cancel' to abort: ");
+      
       if (action.toLowerCase() === 'save') {
+        // Enregistrer chaque détail dans la base de données
+        for (const detail of orderDetails) {
+          await orderModule.addOrderDetail(orderId, detail.product_id, detail.quantity, detail.price);
+        }
         console.log('Order and details saved successfully.');
         break;
-      } else if (action.toLowerCase() !== 'exit') {
+      } else if (action.toLowerCase() === 'cancel') {
+        // Supprimer la commande si l'utilisateur annule
+        await orderModule.destroyOrder(orderId);
+        console.log('Order and details entry canceled. The order has been deleted.');
+        break;
+      } else if (action.toLowerCase() !== 'continue') {
         console.log('Invalid choice, try again.');
       }
     }
@@ -130,6 +144,8 @@ async function promptAddOrder() {
     console.error('Error adding order:', error.message);
   }
 }
+
+
 
 async function promptUpdateOrder() {
   try {
