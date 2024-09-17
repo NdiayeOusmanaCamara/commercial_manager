@@ -54,25 +54,20 @@ async function addOrder(date, customer_id, delivery_address, track_number, statu
 
 async function addOrderDetail(order_id, product_id, quantity, price) {
   try {
+    if (quantity <= 0) {
+      throw new Error("Quantity must be greater than 0.");
+    }
     await pool.execute(
       "INSERT INTO order_details (order_id, product_id, quantity, price) VALUES (?, ?, ?, ?)",
       [order_id, product_id, quantity, price]
     );
   } catch (error) {
+    console.error('Error:', error.message);
     throw new Error("Unable to add order detail.");
   }
 }
 
-// async function updateOrder(id, date, customer_id, delivery_address, track_number, status) {
-//   try {
-//     await pool.execute(
-//       "UPDATE purchase_orders SET date = ?, customer_id = ?, delivery_address = ?, track_number = ?, status = ? WHERE id = ?",
-//       [date, customer_id, delivery_address, track_number, status, id]
-//     );
-//   } catch (error) {
-//     throw new Error("Unable to update order.");
-//   }
-// }
+
 
 async function updateOrder(id, date, customer_id, delivery_address, track_number, status) {
   try {

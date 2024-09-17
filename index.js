@@ -157,7 +157,7 @@ async function promptUpdateOrder() {
       const product_id = readlineSync.questionInt("Enter the product ID: ");
       const quantity = readlineSync.questionInt("Enter the quantity: ");
       const price = readlineSync.questionFloat("Enter the price: ");
-
+      
       await orderModule.updateOrderDetails(updateOrderId, product_id, quantity, price);
 
       const action = readlineSync.question("Type 'exit' to finish or press Enter to update another detail: ");
