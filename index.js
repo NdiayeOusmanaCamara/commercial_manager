@@ -353,14 +353,23 @@ async function manageOrders() {
           console.error('Error deleting order:', error.message);
         }
         break;
-      case "5":
-        try {
-          const orderId = readlineSync.questionInt("Enter the order ID to view details: ");
-          await orderModule.getOrderDetailsById(orderId);
-        } catch (error) {
-          console.error('Error fetching order details:', error.message);
-        }
-        break;
+        case "5":
+  try {
+    const orderId = readlineSync.questionInt("Enter the order ID to view details: ");
+   
+    const order = await orderModule.getOrderBy(orderId);
+    if (order) {
+      console.log("Order Details:");
+      console.table(order); 
+      await orderModule.getOrderDetailsById(orderId);
+    } 
+  } catch (error) {
+    console.error('Error fetching order details:', error.message);
+  }
+  break;
+
+          break;
+      
       case "0":
         return;
       default:

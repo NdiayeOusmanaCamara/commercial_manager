@@ -1,15 +1,27 @@
-const pool = require('./db');
+const pool = require('./db'); 
+
 
 
 async function getOrders() {
   try {
-    const [rows] = await pool.execute("SELECT * FROM purchase_orders");
-    console.log('=====Orders list =====');
-    return rows.length > 0 ? rows : console.log('No orders.');
+   
+    const [rows, fields] = await pool.execute("SELECT * FROM purchase_orders");
+    
+    if (Array.isArray(rows) && rows.length > 0) {
+      console.log('=====Orders list =====');
+      return rows;
+    } else {
+      console.log('No orders found.');
+      return [];
+    }
   } catch (error) {
-    console.error('Error:', error.message);
-    throw error;
+    console.error('Error fetching order details:', error.message);
+    throw error; 
   }
+}
+async function getOrderBy(orderId) {
+  const order = await pool.query('SELECT *  FROM purchase_orders WHERE id = ?', [orderId]);
+  return order[0]; 
 }
 
 async function getOrderDetailsById(orderId) {
@@ -25,8 +37,6 @@ async function getOrderDetailsById(orderId) {
     }
 
     const [details] = await pool.execute("SELECT * FROM order_details WHERE order_id = ?", [orderId]);
-     console.log('===== Order Details =====');
-    // console.log('Order:', order);
     console.table(details.length > 0 ? details : 'No details found.');
   } catch (error) {
     console.error('Error:', error.message);
@@ -123,10 +133,11 @@ async function destroyOrder(orderId) {
 
 module.exports = {
   getOrders,
-  getOrderDetailsById,
+  getOrderDetailsById,  // <-- Make sure this line exists
   addOrder,
   addOrderDetail,
   updateOrder,
   updateOrderDetails,
   destroyOrder,
+  getOrderBy
 };
